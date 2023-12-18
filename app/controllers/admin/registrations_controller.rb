@@ -3,6 +3,7 @@
 class Admin::RegistrationsController < Devise::RegistrationsController
   # before_action :configure_sign_up_params, only: [:create]
   # before_action :configure_account_update_params, only: [:update]
+   before_action :redirect_to_root, only: [:new, :create]
 
   # GET /resource/sign_up
   # def new
@@ -39,6 +40,11 @@ class Admin::RegistrationsController < Devise::RegistrationsController
   # end
 
   # protected
+  private
+
+  def redirect_to_root
+    redirect_to root_path, alert: 'Sign up is not allowed for admins.'
+  end
 
   # If you have extra params to permit, append them to the sanitizer.
   # def configure_sign_up_params

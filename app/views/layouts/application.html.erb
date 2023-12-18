@@ -16,7 +16,13 @@
       <div class="flex justify-center items-center gap-10">
         <% if customer_signed_in? %>
           <div class="bg-white">
+            <h1>Customer</h1>
             <%= link_to "ログアウト", destroy_customer_session_path, method: :delete %>
+          </div>
+        <% elsif admin_signed_in? %>
+          <div class="bg-white">
+            <h1>Admin</h1>
+            <%= link_to "ログアウト", destroy_admin_session_path, method: :delete %>
           </div>
         <% else %>
           <div class="w-full bg-white">
