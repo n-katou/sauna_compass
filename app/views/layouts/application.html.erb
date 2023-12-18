@@ -13,21 +13,23 @@
 
   <body>
     <header>
-      <% if customer_signed_in? %>
-        <li>
-          <%= link_to "ログアウト", destroy_customer_session_path, method: :delete %>
-        </li>
-      <% else %>
-        <li>
-          <%= link_to "新規登録", new_customer_registration_path %>
-        </li>
-        <li>
-          <%= link_to "ログイン", new_customer_session_path %>
-        </li>
-      <% end %>
+      <div class="flex justify-center items-center gap-10">
+        <% if customer_signed_in? %>
+          <div class="bg-white">
+            <%= link_to "ログアウト", destroy_customer_session_path, method: :delete %>
+          </div>
+        <% else %>
+          <div class="w-full bg-white">
+            <%= link_to "新規登録", new_customer_registration_path %>
+          </div>
+          <div class="w-full bg-white">
+            <%= link_to "ログイン", new_customer_session_path %>
+          </div>
+        <% end %>
+      </div>
     </header>
-    <main class="container mx-auto mt-28 px-5 flex">
+    <div class="flex justify-center">
       <%= yield %>
-    </main>
+    </div>
   </body>
 </html>
