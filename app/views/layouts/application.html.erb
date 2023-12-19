@@ -6,16 +6,15 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= stylesheet_link_tag "tailwind", "inter-font", "data-turbo-track": "reload" %>
-
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
   </head>
 
   <body>
-    <header>
+    <header class="bg-blue-500 text-white">
       <div class="w-full">
         <div class="flex left-block">
-          <a href="#">SaunaCompass</a>
+          <a href="#" class="text-2xl font-bold">SaunaCompass</a>
         </div>
         <div class="flex">
           <% if customer_signed_in? %>
