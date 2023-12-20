@@ -1,4 +1,4 @@
-<div class='pt-32 pb-12 md:pt-40 md:pb-20'>
+<div class='pt-20 pb-12 md:pt-40 md:pb-20'>
   <div class='pb-12 text-center md:pb-16'>
     <h1 class='leading-tighter mb-4 text-7xl font-extrabold tracking-tighter md:text-8xl'>
       <span class='p-2 bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent'>
@@ -6,7 +6,6 @@
       </span>
     </h1>
     <div class='mx-auto max-w-3xl'>
-      <p class='mb-8 text-xl'>You will find what you are looking for.</p>
       <div class='flex justify-center mt-5'>
         <div class='mt-3'>
           <%= link_to root_path, class:'group inline-flex items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-purple-600 to-blue-500 p-0.5 font-medium text-gray-900 hover:text-white focus:ring-4 focus:ring-blue-300 group-hover:from-purple-600 group-hover:to-blue-500' do %>
@@ -16,6 +15,62 @@
           <% end %>
         </div>
       </div>
+    </div>
+    <div class='mx-auto max-w-3xl'>
+      <div class="p-4">
+        <input id="address" type="textbox" value="場所" class="w-full p-2 border rounded">
+      </div>
+        <input type="button" value="検索" onclick="codeAddress()" class="p-2 border rounded">
+      </div>
+      <div id="display"></div>
+      <!--<div id='map'></div>-->
+
+      <style>
+      #map {
+        height: 600px;
+        width: 800px;
+      }
+      </style>
+
+      <script>
+      let map
+      let geocoder
+      // 下の1行を追加
+      const display = document.getElementById('display')
+
+      function initMap(){
+        geocoder = new google.maps.Geocoder()
+
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: 40.7828, lng:-73.9653},
+          zoom: 12,
+        });
+
+        marker = new google.maps.Marker({
+          position:  {lat: 40.7828, lng:-73.9653},
+          map: map
+        });
+      }
+
+      function codeAddress(){
+        let inputAddress = document.getElementById('address').value;
+
+        geocoder.geocode( { 'address': inputAddress}, function(results, status) {
+          if (status == 'OK') {
+            map.setCenter(results[0].geometry.location);
+            var marker = new google.maps.Marker({
+                map: map,
+                position: results[0].geometry.location
+            });
+            // 下の1行を追加
+            display.textContent = "検索結果：" + results[ 0 ].geometry.location
+          } else {
+            alert('該当する結果がありませんでした：' + status);
+          }
+        });
+      }
+      </script>
+      <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAP_API_KEY'] %>&callback=initMap" async defer></script>
     </div>
   </div>
 </div>
