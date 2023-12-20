@@ -11,6 +11,7 @@ import "../css/tailwindcss.css"
 import "../css/tailwindcss.css"
 
 import "../../assets/stylesheets/application.css"
+require('../css/tailwindcss.css')
 
 Rails.start()
 Turbolinks.start()
