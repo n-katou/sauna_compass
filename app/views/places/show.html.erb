@@ -1,0 +1,11 @@
+<h1><%= @place.name %></h1>
+
+<p><strong>Address:</strong> <%= @place.address %></p>
+<p><strong>Rating:</strong> <%= @place.rating_avg %></p>
+<p><strong>Longitude:</strong> <%= @place.longitude %></p>
+<p><strong>Latitude:</strong> <%= @place.latitude %></p>
+<p><strong>Phone Number:</strong> <%= @place.phone_number %></p>
+<p><strong>Opening Hours:</strong> <%= @place.opening_hours %></p>
+<p><strong>Website:</strong> <%= @place.website %></p>
+
+<%= link_to 'Back to Places', places_path %>

@@ -1,0 +1,47 @@
+<div class='mx-auto'>
+  <!--<div id='map' style='width: 100%; height: 600px;'></div>-->
+  <script>
+    function initMap() {
+      // 地図要素を取得する（マーカーを表示させるために必要）
+      const mapElement = document.getElementById('map');
+
+      const mapOptions = {
+        center: { lat: 35.6803997, lng: 139.7690174 },
+        zoom: 10
+      };
+
+      const map = new google.maps.Map(mapElement, mapOptions);
+
+      // マーカーを追加（Postの情報からマーカーを追加する）
+      <% @places.each do |place| %>
+        new google.maps.Marker({
+          position: {lat: <%= place.latitude %>, lng: <%= place.longitude %>},
+          map: map,
+          title: '<%= j place.name %>'
+        });
+      <% end %>
+    }
+  </script>
+  <h1>Places</h1>
+  <%= link_to 'New Place', new_place_path %>
+  <table>
+    <tr>
+      <th>Name</th>
+      <th>Address</th>
+      <!-- 他のカラムも追加 -->
+      <th colspan="3"></th>
+    </tr>
+
+    <% @places.each do |place| %>
+      <tr>
+        <td><%= place.name %></td>
+        <td><%= place.address %></td>
+        <!-- 他のカラムも追加 -->
+        <td><%= link_to 'Show', place %></td>
+        <td><%= link_to 'Edit', edit_place_path(place) %></td>
+        <td><%= button_to 'Delete',place, method: :delete, data: {confirm: "削除しますか？"} %></td>
+      </tr>
+    <% end %>
+  </table>
+  <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAP_API_KEY'] %>&callback=initMap" async defer></script>
+</div>
