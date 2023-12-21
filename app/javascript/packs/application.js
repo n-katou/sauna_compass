@@ -12,6 +12,8 @@ import "../css/tailwindcss.css"
 
 import "../../assets/stylesheets/application.css"
 require('../css/tailwindcss.css')
+//= require jquery
+//= require jquery_ujs
 
 Rails.start()
 Turbolinks.start()

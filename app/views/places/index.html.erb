@@ -39,7 +39,18 @@
         <!-- 他のカラムも追加 -->
         <td><%= link_to 'Show', place %></td>
         <td><%= link_to 'Edit', edit_place_path(place) %></td>
-        <td><%= button_to 'Delete',place, method: :delete, data: {confirm: "削除しますか？"} %></td>
+        <td><%= button_to 'Delete',place, method: :delete, data: { turbo: false }, form: { onSubmit: "return check()" } %></td>
+        <script>
+          function check(){
+            if(window.confirm('本当に削除しますか？')){
+              return true;
+            }
+            else{
+              window.alert('キャンセルされました');
+              return false;
+            }
+          }
+        </script>
       </tr>
     <% end %>
   </table>
