@@ -23,4 +23,5 @@ class Place < ApplicationRecord
     # rating_avg を計算するロジックをここに追加
     # 例えば、関連するレビューから平均を計算するなど
   end
+
 end
