@@ -14,33 +14,37 @@
     }
   </script>
   <h1>Places</h1>
-  <%= link_to 'New Place', new_place_path %>
+  <%#= link_to 'New Place', new_place_path %>
   <table>
     <tr>
-      <th>Name</th>
-      <th>Formatted Address</th>
-      <th>Rating Avg</th>
-      <th>Phone Number</th>
-      <th>Show</th>
-      <th>Edit</th>
+      <th></th>
+      <th>名前</th>
+      <th>評価</th>
+      <th>電話番号</th>
     </tr>
 
     <% @places.each do |place| %>
       <tr>
+        <td>
+          <% place.place_images.each do |image| %>
+            <%= image_tag(image.image_url, class: 'photo', style: 'width:200px; height:200px;') %>
+            <!-- 幅や高さを調整するには、style属性の値を変更してください -->
+          <% end %>
+        </td>
         <td><%= place.name %></td>
-        <td><%= place.address %></td>
         <td><%= place.rating_avg %></td>
         <td><%= place.phone_number %></td>
         <!-- 他のカラムも追加 -->
-        <td><%= link_to 'Show', place %></td>
-        <td><%= link_to 'Edit', edit_place_path(place) %></td>
-        <td><%= button_to 'Delete',place, method: :delete, data: { turbo: false }, form: { onSubmit: "return check()" } %></td>
+        <td><%= link_to '詳細', place %></td>
+        <td><%#= link_to '修正', edit_place_path(place) %></td>
+        <td>
+          <%# button_to 'Delete', place, method: :delete, data: { turbo: false }, form: { onSubmit: "return check()" } %>
+        </td>
         <script>
-          function check(){
-            if(window.confirm('本当に削除しますか？')){
+          function check() {
+            if (window.confirm('本当に削除しますか？')) {
               return true;
-            }
-            else{
+            } else {
               window.alert('キャンセルされました');
               return false;
             }
