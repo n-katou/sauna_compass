@@ -1,20 +1,64 @@
 <div class='mx-auto'>
   <!--<div id='map' style='width: 100%; height: 600px;'></div>-->
   <script>
+    var map; // マップの変数をグローバルスコープで宣言
+
+    // Google Maps APIの読み込みが完了したら initMap 関数を実行
     function initMap() {
-      // 地図要素を取得する（マーカーを表示させるために必要）
-      const mapElement = document.getElementById('map');
+      map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 15,
+        center: {lat: <%= @places.first.latitude %>, lng: <%= @places.first.longitude %>},
+      });
 
-      const mapOptions = {
-        center: { lat: 35.8587, lng: 139.8722 },
-        zoom: 10
-      };
+      var transitLayer = new google.maps.TransitLayer();
+      transitLayer.setMap(map);
 
-      const map = new google.maps.Map(mapElement, mapOptions);
+      // 各場所に対してピンを表示
+      <% @places.each do |place| %>
+        var location = {lat: <%= place.latitude %>, lng: <%= place.longitude %>};
+        var contentString = '住所：<%= place.address %>';
+        var infowindow = new google.maps.InfoWindow({
+          content: contentString
+        });
+
+        // Map上の指定した位置にピンを挿して表示する
+        var marker = new google.maps.Marker({
+          position: location,
+          map: map,
+          title: contentString
+        });
+
+        marker.addListener('click', function() {
+          infowindow.open(map, marker);
+        });
+      <% end %>
+
+      // クリックしたらピンに移動する処理
+      document.querySelectorAll('.map-link').forEach(function(link) {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+
+          // クリックした要素から緯度・経度を取得
+          var lat = parseFloat(e.currentTarget.dataset.lat);
+          var lng = parseFloat(e.currentTarget.dataset.lng);
+
+          // マップをその位置に移動
+          map.setCenter({lat: lat, lng: lng});
+          map.setZoom(15);
+        });
+      });
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      // Google Maps APIの読み込み
+      var script = document.createElement('script');
+      script.src = "https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_API_KEY'] %>&callback=initMap";
+      script.async = true;
+      script.defer = true;
+      document.head.appendChild(script);
+    });
   </script>
   <h1>Places</h1>
-  <%#= link_to 'New Place', new_place_path %>
   <table>
     <tr>
       <th></th>
@@ -26,32 +70,18 @@
     <% @places.each do |place| %>
       <tr>
         <td>
-          <% place.place_images.each do |image| %>
-            <%= image_tag(image.image_url, class: 'photo', style: 'width:200px; height:200px;') %>
-            <!-- 幅や高さを調整するには、style属性の値を変更してください -->
-          <% end %>
+          <%= link_to place.name, 'javascript:void(0);', class: 'map-link', data: { lat: place.latitude, lng: place.longitude } %>
         </td>
-        <td><%= place.name %></td>
         <td><%= place.rating_avg %></td>
         <td><%= place.phone_number %></td>
-        <!-- 他のカラムも追加 -->
-        <td><%= link_to '詳細', place %></td>
+        <td>
+          <%= link_to '詳細', place, class: 'map-link', data: { lat: place.latitude, lng: place.longitude } %>
+        </td>
         <td><%#= link_to '修正', edit_place_path(place) %></td>
         <td>
-          <%# button_to 'Delete', place, method: :delete, data: { turbo: false }, form: { onSubmit: "return check()" } %>
+          <%#= button_to 'Delete', place, method: :delete, data: { turbo: false }, form: { onSubmit: "return check()" } %>
         </td>
-        <script>
-          function check() {
-            if (window.confirm('本当に削除しますか？')) {
-              return true;
-            } else {
-              window.alert('キャンセルされました');
-              return false;
-            }
-          }
-        </script>
       </tr>
     <% end %>
   </table>
-  <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_API_KEY'] %>&callback=initMap" async defer></script>
 </div>
