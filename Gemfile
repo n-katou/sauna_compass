@@ -61,3 +61,4 @@ gem 'tailwindcss-rails'
 
 gem 'dotenv-rails', groups: [:development, :test]
 gem 'geocoder'
+gem 'google_places'
