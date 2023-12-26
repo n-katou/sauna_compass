@@ -1,7 +1,9 @@
 <div class='mx-auto'>
-  <!--<div id='map' style='width: 100%; height: 600px;'></div>-->
+  <div id='map' style='width: 100%; height: 600px;'></div>
+  <button id="locateButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">現在地に移動</button>
   <script>
     var map; // マップの変数をグローバルスコープで宣言
+    var userMarker; // ユーザーの位置を示すマーカーの変数を宣言
 
     // Google Maps APIの読み込みが完了したら initMap 関数を実行
     function initMap() {
@@ -13,26 +15,83 @@
       var transitLayer = new google.maps.TransitLayer();
       transitLayer.setMap(map);
 
+      // ユーザーの位置を取得し、マーカーを設定する
+      getUserLocation(function(position) {
+        var userLocation = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+
+        // ユーザーの位置にマーカーを設定
+        userMarker = new google.maps.Marker({
+          position: userLocation,
+          map: map,
+          title: 'Your Location'
+        });
+
+        // ユーザーの位置にマップを移動
+        map.setCenter(userLocation);
+      });
+
+      // グローバル変数として開いているすべてのウィンドウを管理
+      var openInfoWindows = [];
+
+      // ウィンドウが閉じられたときのリスナーを追加
+      function addInfoWindowListener(infowindow) {
+        infowindow.addListener('closeclick', function() {
+          // ウィンドウが閉じられたときに openInfoWindows 配列から削除
+          var index = openInfoWindows.indexOf(infowindow);
+          if (index !== -1) {
+            openInfoWindows.splice(index, 1);
+          }
+        });
+      }
+
       // 各場所に対してピンを表示
       <% @places.each do |place| %>
-        var location = {lat: <%= place.latitude %>, lng: <%= place.longitude %>};
-        var contentString = '住所：<%= place.address %>';
-        var infowindow = new google.maps.InfoWindow({
-          content: contentString
-        });
+        (function(location, contentString, website, openingHours) {
+          var infowindow = new google.maps.InfoWindow({
+            content: contentString
+          });
 
-        // Map上の指定した位置にピンを挿して表示する
-        var marker = new google.maps.Marker({
-          position: location,
-          map: map,
-          title: contentString
-        });
+          // ウィンドウが閉じられたときのリスナーを追加
+          addInfoWindowListener(infowindow);
 
-        marker.addListener('click', function() {
-          infowindow.open(map, marker);
-        });
+          // Map上の指定した位置にピンを挿して表示する
+          var marker = new google.maps.Marker({
+            position: location,
+            map: map,
+            title: contentString
+          });
+
+          marker.addListener('click', function() {
+            // すべてのウィンドウを閉じる
+            closeAllInfoWindows();
+
+            // 新しいウィンドウを開く
+            infowindow.setContent('住所：' + contentString + '</a><br>営業時間: ' + openingHours + '<br><a href="' + website + '" target="_blank">' + 'ホームページ：'+ website);
+            infowindow.open(map, marker);
+
+            // グローバル変数に追加
+            openInfoWindows.push(infowindow);
+          });
+        })(
+          {lat: <%= place.latitude %>, lng: <%= place.longitude %>},
+          '<%= j(place.address) %>',
+          '<%= j(place.website) %>',
+          '<%= j(place.opening_hours) %>'
+        );
       <% end %>
 
+      // グローバル変数として開いているすべてのウィンドウを管理
+      var openInfoWindows = [];
+
+      // 開いているすべてのウィンドウを閉じる関数
+      function closeAllInfoWindows() {
+        for (var i = 0; i < openInfoWindows.length; i++) {
+          openInfoWindows[i].close();
+        }
+      }
       // クリックしたらピンに移動する処理
       document.querySelectorAll('.map-link').forEach(function(link) {
         link.addEventListener('click', function(e) {
@@ -47,6 +106,23 @@
           map.setZoom(15);
         });
       });
+
+      // 現在位置に移動するボタンの追加
+      var locateButton = document.getElementById('locateButton');
+      locateButton.addEventListener('click', function() {
+        // ユーザーの位置にマップを移動
+        map.setCenter(userMarker.getPosition());
+        map.setZoom(15);
+      });
+    }
+
+    // ユーザーの位置を取得する関数
+    function getUserLocation(callback) {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(callback);
+      } else {
+        alert('Geolocation is not supported by this browser.');
+      }
     }
 
     document.addEventListener('DOMContentLoaded', function() {
